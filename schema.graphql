@@ -1,0 +1,84 @@
+type ERC4337Info @entity {
+  # 0x4337
+  id: ID!
+  numFactory: BigInt!
+  numSmartAccount: BigInt!
+  numModule: BigInt!
+  numOwner: BigInt!
+}
+
+type Factory @entity {
+  # factory address
+  id: ID!
+  address: Bytes!
+  smartAccounts: [SmartAccount!]! @derivedFrom(field: "factory")
+  numSmartAccount: BigInt!
+}
+
+type SmartAccount @entity {
+  # smart account address
+  id: ID!
+  address: Bytes!
+  factory: Factory
+  smartAccountOwners: [SmartAccountOwner!]! @derivedFrom(field: "smartAccount")
+  threshold: Int
+  smartAccountModules: [SmartAccountModule!]! @derivedFrom(field: "smartAccount")
+  numUserOp: BigInt!
+  createdTimestamp: BigInt
+}
+
+type Module @entity {
+  # module address
+  id: ID!
+  address: Bytes!
+  type: ModuleType!
+  smartAccountModule: [SmartAccountModule!]! @derivedFrom(field: "module")
+  numInstalled: BigInt!
+  numActive: BigInt! # installed - uninstalled
+}
+
+type Owner @entity {
+  # owner address
+  id: ID!
+  type: KeyType!
+  smartAccountOwners: [SmartAccountOwner!]! @derivedFrom(field: "owner")
+  moduleOwners: [ModuleOwner!]! @derivedFrom(field: "owner")
+}
+
+type SmartAccountModule @entity {
+  # <smart account address><module address>
+  id: ID!
+  smartAccount: SmartAccount!
+  module: Module!
+  data: String!
+  moduleOwner: [ModuleOwner!]! @derivedFrom(field: "module")
+  installedTimestamp: BigInt!
+}
+
+type SmartAccountOwner @entity {
+  # <smart account address>-<owner address>
+  id: ID!
+  smartAccount: SmartAccount!
+  owner: Owner!
+}
+
+type ModuleOwner @entity {
+  # <module address>-<owner address>
+  id: ID!
+  module: SmartAccountModule!
+  owner: Owner!
+}
+
+enum KeyType {
+  ECDSA_SECP256K1
+  ECDSA_SECP256R1
+  RSA_2048
+}
+
+enum ModuleType {
+  VALIDATOR
+  EXECUTOR
+  FALLBACK
+  HOOKS
+}
+

@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package aa;
+
+message ERC4337Infos {
+  repeated ERC4337Info erc4337s = 1;
+}
+
+message ERC4337Info {
+    string id = 1;
+    uint64 numFactory = 2;
+    uint64 numSmartAccount = 3;
+    uint64 numModule = 4;
+    uint64 numOwner = 5;
+}
+
+message Factories {
+  repeated Factory factories = 1;
+}
+
+message Factory {
+  string address = 1;
+  repeated SmartAccount smart_accounts = 2;
+  uint64 numSmartAccount = 3;
+}
+
+message SmartAccounts {
+  repeated SmartAccount smart_accounts = 1;
+}
+
+message SmartAccount {
+  string address = 1;
+  string factory = 2;
+  uint64 num_user_op = 3;
+  int64 created_at_timestamp = 4;
+}
+
+message Events {
+  repeated SmartAccount smart_account = 2;
+  repeated ModuledInstalled module = 3;
+  repeated OwnerChanged owner = 4;
+  repeated UserOpSender user_op_sender = 5;
+
+  message SmartAccount {
+    string sender = 1;
+    string factory = 2;
+    // string initcode = 3;
+    uint64 log_ordinal = 3;
+    uint64 timestamp = 4;
+  }
+
+  message ModuledInstalled {
+    string sender = 1;
+    string module = 2;
+    string data = 3;
+    repeated ModuleOwnerChanged owners = 4;
+    uint64 log_ordinal = 5;
+    uint64 timestamp = 6;
+  }
+
+  message OwnerChanged {
+    string sender = 1;
+    string key_type = 2;
+    string new_owner = 3;
+    uint32 threshold = 4;
+    uint64 log_ordinal = 5;
+  }
+
+  message ModuleOwnerChanged {
+    string owner = 1;
+    string key_type = 2;
+  }
+
+  message UserOpSender {
+    string sender = 1;
+    uint64 log_ordinal = 2;
+  }
+}
+
+message FactoryInitEvents {
+  repeated FactoryInitEvent factory_init = 1;
+}
+
+message FactoryInitEvent {
+  string factory = 1;
+  string initcode = 2;
+  string sender = 3;
+  uint64 log_ordinal = 4;
+}
